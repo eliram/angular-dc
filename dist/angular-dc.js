@@ -25,6 +25,10 @@
         function($timeout) {
             /* Whitelisted options to be read from a chart's html attributes. */
             var directiveOptions = [
+                'dimension',
+                'group',
+                'width',
+                'height',
                 'name',
                 'onRenderlet',
                 'onFiltered',
@@ -61,6 +65,10 @@
                 // All options are prepended with 'dc-'' to avoid clashing with html own meaning (e.g width)
                 // All options are parsed in angular's $parse language, so beware, it is not javascript!
                 options = getOptionsFromAttrs(scope, iAttrs, validOptions);
+                //Default value accessor
+                if('valueAccessor' in options && !options.valueAccessor){
+                  delete options.valueAccessor;
+                }
                 // we may have a dc-options attribute which contain a javascript object for stuff
                 // not writtable in $parse language
                 if ('options' in options) {
@@ -104,7 +112,12 @@
             }
 
             function getOptionsFromAttrs(scope, iAttrs, validOptions) {
-                return _(iAttrs.$attr).keys().intersection(validOptions).map(function(key) {
+                return _(iAttrs.$attr).omit(
+                  //Remove undefined attrs
+                  function (key, value) {
+                  return _.isUndefined(iAttrs[value]) || iAttrs[value] === '';
+                }
+              ).keys().intersection(validOptions).map(function(key) {
                     var value = scope.$eval(iAttrs[key]);
                     // remove the dc- prefix if any
                     if (key.substring(0, 2) === 'dc') {
@@ -140,7 +153,8 @@
                                 // by the controller
                                 var r = scope.$eval(iAttrs[key]);
                                 if (_.isUndefined(r)) {
-                                    throw Error(iAttrs[key] + ' is undefined');
+                                  return false;
+                                    // throw Error(iAttrs[key] + ' is undefined');
                                 }
                                 return r;
                             } catch (e) {
@@ -163,13 +177,14 @@
                             unwatch();
                             var chart = setupChart(scope, iElement, iAttrs);
                             // populate the .reset childrens with necessary reset callbacks
-                            var a = angular.element(iElement[0].querySelector('a.reset'));
+                            var a = angular.element(iElement[0].querySelector('small.reset'));
                             a.on('click', function() {
                                 chart.filterAll();
                                 dc.redrawAll();
                             });
                             a.attr('href', 'javascript:;');
                             a.css('display', 'none');
+                            a.css('cursor', 'pointer');
                             // watching the attributes is costly, so we stop after first rendering
                             chart.render();
                         }
