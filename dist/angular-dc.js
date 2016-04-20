@@ -84,18 +84,21 @@
                 // Configure the chart based on options
                 chart.options(options);
                 // Get event handlers, if any, from options
-                var eventHandlers = _({
+                var eventHandlers = {
                     'renderlet': options.onRenderlet,
                     'preRender': options.onPreRender,
                     'postRender': options.onPostRender,
                     'preRedraw': options.onPreRedraw,
                     'postRedraw': options.onPostRedraw,
-                    'filtered': options.onFiltered,
+                    'filtered.monitor': options.onFiltered,
                     'zoomed': options.onZoomed
-                }).omit(_.isUndefined);
+                }
                 // Register the eventHandlers with the chart (Dc.js)
-                eventHandlers.each(function(handler, evt) {
-                    chart.on(evt, handler);
+                Object.keys(eventHandlers).forEach(function(evt) {
+                  if(eventHandlers[evt]){
+                    console.log(evt);
+                    chart.on(evt, eventHandlers[evt]);
+                  }
                 });
                 // Run the postSetupChart callback, if provided
                 if (_.isFunction(options.postSetupChart)) {
