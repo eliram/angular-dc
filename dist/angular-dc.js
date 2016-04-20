@@ -96,7 +96,6 @@
                 // Register the eventHandlers with the chart (Dc.js)
                 Object.keys(eventHandlers).forEach(function(evt) {
                   if(eventHandlers[evt]){
-                    console.log(evt);
                     chart.on(evt, eventHandlers[evt]);
                   }
                 });
