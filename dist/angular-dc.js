@@ -69,6 +69,9 @@
                 if('valueAccessor' in options && !options.valueAccessor){
                   delete options.valueAccessor;
                 }
+                if('filterHandler' in options && !options.filterHandler){
+                  delete options.filterHandler;
+                }
                 // we may have a dc-options attribute which contain a javascript object for stuff
                 // not writtable in $parse language
                 if ('options' in options) {
