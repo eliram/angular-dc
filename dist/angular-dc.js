@@ -65,13 +65,12 @@
                 // All options are prepended with 'dc-'' to avoid clashing with html own meaning (e.g width)
                 // All options are parsed in angular's $parse language, so beware, it is not javascript!
                 options = getOptionsFromAttrs(scope, iAttrs, validOptions);
-                //Default value accessor
-                if('valueAccessor' in options && !options.valueAccessor){
-                  delete options.valueAccessor;
-                }
-                if('filterHandler' in options && !options.filterHandler){
-                  delete options.filterHandler;
-                }
+                //Delete any undefined options
+                Object.keys(options).forEach(function (key) {
+                  if(!options[key]){
+                    delete options[key];
+                  }
+                });
                 // we may have a dc-options attribute which contain a javascript object for stuff
                 // not writtable in $parse language
                 if ('options' in options) {
