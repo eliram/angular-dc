@@ -67,7 +67,7 @@
                 options = getOptionsFromAttrs(scope, iAttrs, validOptions);
                 //Delete any undefined options
                 Object.keys(options).forEach(function (key) {
-                  if(!options[key]){
+                  if(options[key] === undefined){
                     delete options[key];
                   }
                 });
