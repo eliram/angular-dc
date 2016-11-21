@@ -169,7 +169,7 @@
                                 return undefined;
                             }
                         });
-                        if (options.any(_.isUndefined)) {
+                        if (options.some(_.isUndefined)) {
                             // return undefined if there is at least one undefined option
                             // so that the $watch dont call us again at this $digest time
                             return undefined;
