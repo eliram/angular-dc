@@ -65,18 +65,6 @@
                 // All options are prepended with 'dc-'' to avoid clashing with html own meaning (e.g width)
                 // All options are parsed in angular's $parse language, so beware, it is not javascript!
                 options = getOptionsFromAttrs(scope, iAttrs, validOptions);
-                //Delete any undefined options
-                Object.keys(options).forEach(function (key) {
-                  if(options[key] === undefined){
-                    delete options[key];
-                  }
-                });
-                // we may have a dc-options attribute which contain a javascript object for stuff
-                // not writtable in $parse language
-                if ('options' in options) {
-                    options = _.merge(options, options.options);
-                    options.options = undefined;
-                }
                 // If we have a dc-name attribute, we populate the scope with the chart
                 // object dc-name
                 if ('name' in options) {
@@ -116,12 +104,10 @@
             }
 
             function getOptionsFromAttrs(scope, iAttrs, validOptions) {
-                return _(iAttrs.$attr).omit(
-                  //Remove undefined attrs
-                  function (key, value) {
-                  return _.isUndefined(iAttrs[value]) || iAttrs[value] === '';
-                }
-              ).keys().intersection(validOptions).map(function(key) {
+                return _(iAttrs.$attr)
+                .keys()
+                .intersection(validOptions)
+                .map(function(key) {
                     var value = scope.$eval(iAttrs[key]);
                     // remove the dc- prefix if any
                     if (key.substring(0, 2) === 'dc') {
@@ -131,7 +117,14 @@
                         key,
                         value
                     ];
-                }).zipObject().value();
+                })
+                .fromPairs()
+                .tap(function(options){
+                  _.merge(options, options.options);
+                  delete options.options;
+                })
+                .omitBy(_.isNil)
+                .value();
             }
             return {
                 restrict: 'A',
@@ -259,3 +252,4 @@
 
 
 }));
+
